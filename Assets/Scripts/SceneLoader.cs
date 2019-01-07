@@ -9,24 +9,18 @@ public class SceneLoader : MonoBehaviour
     int nLevels;
 
     [SerializeField] WinScreen winScreen;
+    private void Awake()
+    {
+        currentLevel = SceneManager.GetActiveScene().buildIndex;
+    }
     void Start()
     {
         Time.timeScale = 1;
-        //audioSource = GetComponent<AudioSource>();
-        currentLevel = SceneManager.GetActiveScene().buildIndex;
-        
         nLevels = SceneManager.sceneCountInBuildSettings;
-        //print("Level count :" + nLevels);
-       // print("Current level : " + currentLevel);
-        
-        
+         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
-    }
     public void GameOver()
     {
         print("Gameover");
@@ -53,7 +47,7 @@ public class SceneLoader : MonoBehaviour
     }
     public void RestartLevel()
     {
-       
+        print("Restartlevle");
         int currentLevel = SceneManager.GetActiveScene().buildIndex;
        
         SceneManager.LoadScene(currentLevel);
@@ -66,6 +60,12 @@ public class SceneLoader : MonoBehaviour
 
     public int getLevelIndex()
     {
+        currentLevel = SceneManager.GetActiveScene().buildIndex;
         return currentLevel;
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

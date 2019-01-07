@@ -7,6 +7,12 @@ TagManager:
   - Friendly
   - Fuel
   - Music
+  - Fire
+  - Mobile
+  - LevelTitle
+  - PortalIn
+  - Portal
+  - PortalOut
   layers:
   - Default
   - TransparentFX

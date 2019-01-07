@@ -14,9 +14,9 @@ public class WinScreen : MonoBehaviour
     // Start is called before the first frame update
      void Awake()
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
         musicAudioSource = GameObject.FindGameObjectWithTag("Music").GetComponent<AudioSource>();
-
+       // gameObject.SetActive(true);
 
 
     }

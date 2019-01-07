@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 230376192}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.019999912, y: 2.45, z: -1.86}
+  m_LocalPosition: {x: 0.019999912, y: 0.57, z: -2.05}
   m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
   m_Children: []
   m_Father: {fileID: 1294565446179937340}
@@ -40,11 +40,11 @@ Light:
   m_GameObject: {fileID: 230376192}
   m_Enabled: 1
   serializedVersion: 8
-  m_Type: 2
-  m_Color: {r: 0, g: 1, b: 0.0184803, a: 1}
-  m_Intensity: 3.02
-  m_Range: 4.27
-  m_SpotAngle: 30
+  m_Type: 0
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 6.65
+  m_Range: 1.89
+  m_SpotAngle: 108.57
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -154,7 +154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &882576669
 Transform:
   m_ObjectHideFlags: 0
@@ -576,6 +576,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   thrustSpeed: 200
   rotationSpeed: 200
+  rotationSpeedMobile: 5
+  joystickDeadZone: 0.2
   gameOverMenu: {fileID: 0}
   pauseMenu: {fileID: 0}
   mainEngine: {fileID: 8300000, guid: dcd8b9ff2bf106a42954c38b38efe618, type: 3}
@@ -585,7 +587,7 @@ MonoBehaviour:
   deadParticles: {fileID: 1398955520341144765}
   successParticles: {fileID: 6529050006005323663}
   fxAudioSource: {fileID: 0}
-  startingFuel: 50
+  startingFuel: 40
   burnSpeed: 25
   fuelText: {fileID: 0}
   fuelCell: 20

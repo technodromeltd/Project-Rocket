@@ -3,14 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityStandardAssets.CrossPlatformInput;
+
 public class Rocket : MonoBehaviour
 {
     // Start is called before the first frame update
 
     Rigidbody rigidbody;
     AudioSource audioSource;
+    RightJoystick rightJoystick;
     [SerializeField] float thrustSpeed = 100; 
-    [SerializeField] float rotationSpeed = 100; 
+    [SerializeField] float rotationSpeed = 100;
+    [SerializeField] float rotationSpeedMobile = 3;
+    [SerializeField] float joystickDeadZone = 0.2f;
     [SerializeField] Canvas gameOverMenu; 
     [SerializeField] Canvas pauseMenu;
    
@@ -34,11 +39,16 @@ public class Rocket : MonoBehaviour
     float currentFuel;
 
     public SceneLoader sceneLoader;
- 
+    bool MOBILE_CONTROLS = false;
+    Text levelTitleText;
+
+
 
     void Start()
     {
-        
+        levelTitleText = GameObject.FindGameObjectWithTag("LevelTitle").GetComponent<Text>();
+        levelTitleText.text = "LEVEL " + sceneLoader.getLevelIndex();
+        //rightJoystick = GameObject.FindGameObjectWithTag("Mobile").GetComponent<RightJoystick>();
         gameOverMenu.gameObject.SetActive(false);
         pauseMenu.gameObject.SetActive(false);
        
@@ -48,7 +58,13 @@ public class Rocket : MonoBehaviour
         audioSource.Play();
         isPaused = false;
         currentFuel = startingFuel;
-        
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
+        MOBILE_CONTROLS = false;
+#else
+           INSIDE_UNITY = true;
+#endif
+       
+
     }
 
     // Update is called once per frame
@@ -56,10 +72,15 @@ public class Rocket : MonoBehaviour
     {
         if (state == State.Alive)
         {
-        Thrust();
-        Rotate();
+            if (!MOBILE_CONTROLS) { 
+            ThrustKeyboard();
+            RotateKeyboard();
+        } else { 
+            ThrustMobile();
+            RotateMobile();
+}
 
-        }
+    }
         else if (state == State.Dead)
         {
             if (Input.GetKeyDown(KeyCode.Return))
@@ -67,7 +88,12 @@ public class Rocket : MonoBehaviour
                 sceneLoader.RestartLevel();
             }
         }
-       
+        else if (state == State.Pause) { 
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                sceneLoader.RestartLevel();
+            }
+        }
         RespondToPause();
         UpdateFuelText();
        
@@ -94,7 +120,7 @@ public class Rocket : MonoBehaviour
             if (isPaused == false)
             {
 
-                print("Stopping audio");
+               
                 Time.timeScale = 0; 
                 audioSource.Stop();
                
@@ -120,12 +146,24 @@ public class Rocket : MonoBehaviour
         pauseMenu.gameObject.SetActive(b);
     }
 
-    private void Thrust()
+    private void ThrustMobile()
     {
-        if (Input.GetKey(KeyCode.Space) && (currentFuel >= 0))
+       
+        if (CrossPlatformInputManager.GetButton("Thrust") && (currentFuel >= 0))
         {
-            ApplyThrust();
-            
+            ApplyThrust();            
+        }
+        else
+        {
+            StopApplyingThrust();
+        }
+    }
+     private void ThrustKeyboard()
+    {
+             
+         if (Input.GetKey(KeyCode.Space) && (currentFuel >= 0))
+        {
+            ApplyThrust();            
         }
         else
         {
@@ -170,12 +208,12 @@ public class Rocket : MonoBehaviour
         fuelText.text = currentFuelString;
     }
 
-    private void Rotate()
+    private void RotateKeyboard()
     {
 
-        //rigidbody.freezeRotation = true;
-       // rigidbody.SetMaxAngularVelocity(1);
         float rotationThisFrame = rotationSpeed * Time.deltaTime ;
+     
+       
        if (Input.GetKey(KeyCode.LeftArrow))
         { 
             transform.Rotate(Vector3.forward * rotationThisFrame);
@@ -184,8 +222,20 @@ public class Rocket : MonoBehaviour
         {
             transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
-       // rigidbody.SetMaxAngularVelocity(1);
-        //rigidbody.freezeRotation = false;
+      
+ 
+    }
+    void RotateMobile()
+    {
+        float x = -CrossPlatformInputManager.GetAxis("Horizontal");
+        //float x = -rightJoystick.GetInputDirection().x;
+        //print(x);
+        if (Mathf.Abs(x) < joystickDeadZone)
+            return;
+        x = x * rotationSpeedMobile;
+        
+            transform.Rotate(Vector3.forward * x);
+        
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -196,31 +246,57 @@ public class Rocket : MonoBehaviour
                 Destroy(other.gameObject);
                
                 break;
+
+            case "PortalIn":
+                PortalIn();
+                break;
+
             default:
                 break;
         }
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive || !collisionsEnabled) { return;  }
+        print(collision);
+        if (state != State.Alive || !collisionsEnabled) { return; }
 
         switch (collision.gameObject.tag)
         {
             case "Friendly":
-               
+
                 break;
+            
             case "Finish":
                 StartSuccessSequnce();
                 break;
-            
+
             default:
                 StartDeadSequence();
 
                 break;
 
         }
-    }
 
+    }
+    private void PortalIn()
+    {
+       var portalA = GameObject.FindGameObjectWithTag("PortalIn");
+        var portalB = GameObject.FindGameObjectWithTag("PortalOut");
+        Vector3 newVelocityDirection = rigidbody.velocity;
+        var euler = portalB.transform.rotation.eulerAngles;
+        var rot = Quaternion.Euler(0, 0, euler.z);
+        float teleportTurnAngle = portalA.transform.parent.eulerAngles.x + portalB.transform.parent.eulerAngles.x;
+       
+
+        rigidbody.velocity = Quaternion.AngleAxis(teleportTurnAngle, Vector3.forward) * newVelocityDirection;
+
+       
+
+        transform.rotation = Quaternion.AngleAxis(teleportTurnAngle, Vector3.forward) * transform.rotation; ;
+        transform.position = portalB.transform.position;
+       
+        
+    }
     private  void CollectFuelCell( )
     {
         // Increase currentFuel amount, remove object from scene
