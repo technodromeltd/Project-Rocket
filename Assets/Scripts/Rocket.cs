@@ -12,58 +12,68 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidbody;
     AudioSource audioSource;
     RightJoystick rightJoystick;
-    [SerializeField] float thrustSpeed = 100; 
+    [SerializeField] float thrustSpeed = 100;
     [SerializeField] float rotationSpeed = 100;
-    [SerializeField] float rotationSpeedMobile = 3;
+    float rotationSpeedMobile = 200;
     [SerializeField] float joystickDeadZone = 0.2f;
-    [SerializeField] Canvas gameOverMenu; 
+    [SerializeField] Canvas gameOverMenu;
     [SerializeField] Canvas pauseMenu;
-   
+
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip dead;
     [SerializeField] AudioClip success;
+    [SerializeField] AudioClip teleport;
 
     [SerializeField] ParticleSystem mainEngineParticles;
     [SerializeField] ParticleSystem deadParticles;
     [SerializeField] ParticleSystem successParticles;
     [SerializeField] AudioSource fxAudioSource;
-    [SerializeField] float startingFuel;
-    [SerializeField] float burnSpeed;
-    [SerializeField] Text fuelText;
-    [SerializeField] int fuelCell;
-    enum State {Alive, Dead,Transcending, Pause};
+
+
+
+
+    FuelController fuelController;
+    float currentFuel;
+
+    enum State { Alive, Dead, Transcending, Pause, Teleporting };
     State state = State.Alive;
 
     bool collisionsEnabled = true;
     bool isPaused;
-    float currentFuel;
+
 
     public SceneLoader sceneLoader;
-    bool MOBILE_CONTROLS = false;
+    bool MOBILE_CONTROLS = true;
     Text levelTitleText;
 
+
+    private float timePressStarted;
+    private bool longPressTriggered = false;
+    public float durationThreshold = 0.1f;
 
 
     void Start()
     {
+        fuelController = FindObjectOfType<FuelController>();
         levelTitleText = GameObject.FindGameObjectWithTag("LevelTitle").GetComponent<Text>();
         levelTitleText.text = "LEVEL " + sceneLoader.getLevelIndex();
         //rightJoystick = GameObject.FindGameObjectWithTag("Mobile").GetComponent<RightJoystick>();
         gameOverMenu.gameObject.SetActive(false);
         pauseMenu.gameObject.SetActive(false);
-       
+
         rigidbody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
         audioSource.volume = 0.02f;
         audioSource.Play();
         isPaused = false;
-        currentFuel = startingFuel;
+
+
 #if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
         MOBILE_CONTROLS = false;
 #else
-           INSIDE_UNITY = true;
+          MOBILE_CONTROLS = true;
 #endif
-       
+
 
     }
 
@@ -72,15 +82,18 @@ public class Rocket : MonoBehaviour
     {
         if (state == State.Alive)
         {
-            if (!MOBILE_CONTROLS) { 
-            ThrustKeyboard();
-            RotateKeyboard();
-        } else { 
-            ThrustMobile();
-            RotateMobile();
-}
+            if (!MOBILE_CONTROLS)
+            {
+                ThrustKeyboard();
+                RotateKeyboard();
+            }
+            else
+            {
+                TwoTapControls();
+                // RotateMobile();
+            }
 
-    }
+        }
         else if (state == State.Dead)
         {
             if (Input.GetKeyDown(KeyCode.Return))
@@ -88,20 +101,23 @@ public class Rocket : MonoBehaviour
                 sceneLoader.RestartLevel();
             }
         }
-        else if (state == State.Pause) { 
+        else if (state == State.Pause)
+        {
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 sceneLoader.RestartLevel();
             }
         }
         RespondToPause();
-        UpdateFuelText();
-       
+
+
         if (Debug.isDebugBuild)
         {
             RespondToDebugKeys();
         }
+        currentFuel = fuelController.getCurrentFuel();
     }
+
     void RespondToDebugKeys()
     {
         if (Input.GetKeyDown(KeyCode.L))
@@ -120,24 +136,24 @@ public class Rocket : MonoBehaviour
             if (isPaused == false)
             {
 
-               
-                Time.timeScale = 0; 
+
+                Time.timeScale = 0;
                 audioSource.Stop();
-               
+
                 isPaused = true;
                 TogglePauseMenu(isPaused);
                 state = State.Pause;
             }
             else
             {
-      
+
                 Time.timeScale = 1;
                 isPaused = false;
                 TogglePauseMenu(isPaused);
                 state = State.Alive;
 
             }
-             
+
         }
     }
 
@@ -146,24 +162,64 @@ public class Rocket : MonoBehaviour
         pauseMenu.gameObject.SetActive(b);
     }
 
+    private void TwoTapControls()
+    {
+        float rotationThisFrame = rotationSpeedMobile * Time.deltaTime;
+        if (CrossPlatformInputManager.GetButton("RightThrust") && CrossPlatformInputManager.GetButton("LeftThrust") && currentFuel > 0)
+        {
+            ApplyThrust();
+        }
+        else
+        {
+            StopApplyingThrust();
+            if (CrossPlatformInputManager.GetButton("RightThrust"))
+            {
+                if (!longPressTriggered)
+                {
+                    timePressStarted = Time.time;
+                    longPressTriggered = true;
+                }
+
+                if (Time.time - timePressStarted > durationThreshold)
+                {
+                    transform.Rotate(-Vector3.forward * rotationThisFrame);
+                }
+            }
+            else if (CrossPlatformInputManager.GetButton("LeftThrust"))
+            {
+                if (!longPressTriggered)
+                    timePressStarted = Time.time;
+                longPressTriggered = true;
+                if (Time.time - timePressStarted > durationThreshold)
+                {
+                    transform.Rotate(Vector3.forward * rotationThisFrame);
+                }
+            }
+            else
+            {
+                longPressTriggered = false;
+            }
+        }
+
+    }
     private void ThrustMobile()
     {
-       
+
         if (CrossPlatformInputManager.GetButton("Thrust") && (currentFuel >= 0))
         {
-            ApplyThrust();            
+            ApplyThrust();
         }
         else
         {
             StopApplyingThrust();
         }
     }
-     private void ThrustKeyboard()
+    private void ThrustKeyboard()
     {
-             
-         if (Input.GetKey(KeyCode.Space) && (currentFuel >= 0))
+
+        if (Input.GetKey(KeyCode.Space) && (currentFuel >= 0))
         {
-            ApplyThrust();            
+            ApplyThrust();
         }
         else
         {
@@ -192,38 +248,26 @@ public class Rocket : MonoBehaviour
 
         mainEngineParticles.Play();
 
-        BurnFuel();
+        fuelController.BurnFuel();
     }
 
-    private void BurnFuel()
-    {
-        float burnRate = burnSpeed * Time.deltaTime;
-        currentFuel -= burnRate;
-       
-    }
 
-    private void UpdateFuelText()
-    {
-        string currentFuelString = ((int)currentFuel).ToString();
-        fuelText.text = currentFuelString;
-    }
+
 
     private void RotateKeyboard()
     {
 
-        float rotationThisFrame = rotationSpeed * Time.deltaTime ;
-     
-       
-       if (Input.GetKey(KeyCode.LeftArrow))
-        { 
+        float rotationThisFrame = rotationSpeed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
             transform.Rotate(Vector3.forward * rotationThisFrame);
         }
-       else if (Input.GetKey(KeyCode.RightArrow))
+        else if (Input.GetKey(KeyCode.RightArrow))
         {
             transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
-      
- 
+
+
     }
     void RotateMobile()
     {
@@ -233,22 +277,24 @@ public class Rocket : MonoBehaviour
         if (Mathf.Abs(x) < joystickDeadZone)
             return;
         x = x * rotationSpeedMobile;
-        
-            transform.Rotate(Vector3.forward * x);
-        
+
+        transform.Rotate(Vector3.forward * x);
+
     }
     private void OnTriggerEnter(Collider other)
     {
+        if (state != State.Alive) { return; }
         switch (other.gameObject.tag)
         {
             case "Fuel":
-                CollectFuelCell();
+                fuelController.CollectFuelCell();
                 Destroy(other.gameObject);
-               
+
                 break;
 
-            case "PortalIn":
-                PortalIn();
+            case "Portal":
+               
+                TeleportRocket(other);
                 break;
 
             default:
@@ -265,7 +311,7 @@ public class Rocket : MonoBehaviour
             case "Friendly":
 
                 break;
-            
+
             case "Finish":
                 StartSuccessSequnce();
                 break;
@@ -278,30 +324,37 @@ public class Rocket : MonoBehaviour
         }
 
     }
-    private void PortalIn()
+    private void TeleportRocket(Collider senderPortal)
     {
-       var portalA = GameObject.FindGameObjectWithTag("PortalIn");
-        var portalB = GameObject.FindGameObjectWithTag("PortalOut");
-        Vector3 newVelocityDirection = rigidbody.velocity;
+        fxAudioSource.clip = teleport;
+        fxAudioSource.Play();
+        StartCoroutine(DisableCollisionsWhileTeleporting());
+        GameObject targetPortal = senderPortal.gameObject.GetComponent<PortalController>().getTargetPortal();
+        var portalA = senderPortal.gameObject;
+        var portalB = targetPortal.gameObject;
+
+        Vector3 newVelocityDirection = new Vector3(rigidbody.velocity.y, rigidbody.velocity.x, rigidbody.velocity.z);
+        float xAngle = transform.rotation.eulerAngles.x;
+        print(rigidbody.velocity);
         var euler = portalB.transform.rotation.eulerAngles;
         var rot = Quaternion.Euler(0, 0, euler.z);
-        float teleportTurnAngle = portalA.transform.parent.eulerAngles.x + portalB.transform.parent.eulerAngles.x;
-       
+        float teleportTurnAngle = portalA.transform.eulerAngles.x + portalB.transform.eulerAngles.x;
 
         rigidbody.velocity = Quaternion.AngleAxis(teleportTurnAngle, Vector3.forward) * newVelocityDirection;
-
-       
-
+        
         transform.rotation = Quaternion.AngleAxis(teleportTurnAngle, Vector3.forward) * transform.rotation; ;
         transform.position = portalB.transform.position;
-       
-        
+        print("Teleportin with teleportTurnAngle:" + teleportTurnAngle);
+
+
     }
-    private  void CollectFuelCell( )
+    IEnumerator DisableCollisionsWhileTeleporting()
     {
-        // Increase currentFuel amount, remove object from scene
-        currentFuel += fuelCell;
-        
+        state = State.Teleporting;
+        print("Teleporting, untouchable");
+        yield return new WaitForSeconds(0.2f);
+        print("Teleportin DONE");
+        state = State.Alive;
     }
 
     private void StartSuccessSequnce()
@@ -313,7 +366,7 @@ public class Rocket : MonoBehaviour
         successParticles.Play();
         sceneLoader.Invoke("LoadNextLevel", 1f);
     }
-  
+
 
     private void StartDeadSequence()
     {
@@ -335,14 +388,14 @@ public class Rocket : MonoBehaviour
 
     IEnumerator VolumeFade(AudioSource _AudioSource, float _EndVolume, float _FadeLength)
     {
-       
+
         float _StartVolume = _AudioSource.volume;
         float _StartTime = Time.time;
 
         while (Time.time < _StartTime + _FadeLength)
         {
             _AudioSource.volume = _StartVolume + ((_EndVolume - _StartVolume) * ((Time.time - _StartTime) / _FadeLength));
-           
+
             yield return null;
         }
 
@@ -350,7 +403,7 @@ public class Rocket : MonoBehaviour
 
     }
 
-    
+
 
     void ShowGameOverMenu()
     {

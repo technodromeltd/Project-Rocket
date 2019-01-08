@@ -15,7 +15,7 @@ public class SceneLoader : MonoBehaviour
     }
     void Start()
     {
-        Time.timeScale = 1;
+        Time.timeScale = 1f;
         nLevels = SceneManager.sceneCountInBuildSettings;
          
     }

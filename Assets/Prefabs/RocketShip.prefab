@@ -583,15 +583,13 @@ MonoBehaviour:
   mainEngine: {fileID: 8300000, guid: dcd8b9ff2bf106a42954c38b38efe618, type: 3}
   dead: {fileID: 8300000, guid: d0e56905c6901ba4e8357263d9e06464, type: 3}
   success: {fileID: 8300000, guid: a01a236a3f9982b42a68f78bf0145a50, type: 3}
+  teleport: {fileID: 8300000, guid: 24219ac7b92043744ac799299d36839b, type: 3}
   mainEngineParticles: {fileID: 8054802657274085863}
   deadParticles: {fileID: 1398955520341144765}
   successParticles: {fileID: 6529050006005323663}
   fxAudioSource: {fileID: 0}
-  startingFuel: 40
-  burnSpeed: 25
-  fuelText: {fileID: 0}
-  fuelCell: 20
   sceneLoader: {fileID: 0}
+  durationThreshold: 0.1
 --- !u!1 &2153992387171719265
 GameObject:
   m_ObjectHideFlags: 0

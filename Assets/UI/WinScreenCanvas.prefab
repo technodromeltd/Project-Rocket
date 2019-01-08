@@ -27,7 +27,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2959232563871284522}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5699197369007826560}
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.4117647}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -129,8 +129,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 546.2, y: 200.4}
+  m_AnchoredPosition: {x: 4.9, y: -8.2}
+  m_SizeDelta: {x: 673.8, y: 288.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7347096823925404629
 CanvasRenderer:
@@ -166,18 +166,16 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 10
-    m_MaxSize: 110
+    m_MaxSize: 120
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'WOW DUDE
+  m_Text: 'AMAZING!
 
-    WELL DONE MATE
-
-    JUST WOW'
+    You beat the game.'
 --- !u!95 &7914182237834696723
 Animator:
   serializedVersion: 3
@@ -217,7 +215,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5699197369007826560
 RectTransform:
   m_ObjectHideFlags: 0
@@ -251,7 +249,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 0}
-  m_PlaneDistance: 30.33
+  m_PlaneDistance: 14.26
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -433,7 +431,7 @@ PrefabInstance:
     - target: {fileID: 5409261064008573593, guid: 62198a3a5dbb64a4f9e1618929224faa,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -27.9
+      value: 214
       objectReference: {fileID: 0}
     - target: {fileID: 5409261064008573593, guid: 62198a3a5dbb64a4f9e1618929224faa,
         type: 3}
@@ -477,6 +475,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
         type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
+        type: 3}
       propertyPath: InitialModule.startSize.scalar
       value: 5
       objectReference: {fileID: 0}
@@ -493,12 +496,22 @@ PrefabInstance:
     - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
         type: 3}
       propertyPath: InitialModule.gravityModifier.scalar
-      value: -1
+      value: -0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
+        type: 3}
+      propertyPath: ShapeModule.m_Position.y
+      value: -6.74
+      objectReference: {fileID: 0}
+    - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
+        type: 3}
+      propertyPath: ShapeModule.m_Position.z
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
         type: 3}
       propertyPath: ShapeModule.m_Scale.x
-      value: 16.25
+      value: 13.45
       objectReference: {fileID: 0}
     - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
         type: 3}
@@ -508,12 +521,27 @@ PrefabInstance:
     - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
         type: 3}
       propertyPath: ShapeModule.radius.value
-      value: 6.02
+      value: 1.91
       objectReference: {fileID: 0}
     - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
         type: 3}
       propertyPath: SizeModule.enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
+        type: 3}
+      propertyPath: LightsModule.rangeCurve.scalar
+      value: 2.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
+        type: 3}
+      propertyPath: LightsModule.intensityCurve.scalar
+      value: 3.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 5322887734495640911, guid: 62198a3a5dbb64a4f9e1618929224faa,
+        type: 3}
+      propertyPath: LightsModule.maxLights
+      value: 49
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62198a3a5dbb64a4f9e1618929224faa, type: 3}
