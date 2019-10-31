@@ -49,11 +49,12 @@ public class Rocket : MonoBehaviour
 
     private float timePressStarted;
     private bool longPressTriggered = false;
-    public float durationThreshold = 0.1f;
+    public float durationThreshold = 0.05f;
 
 
     void Start()
     {
+        sceneLoader = FindObjectOfType<SceneLoader>();
         fuelController = FindObjectOfType<FuelController>();
         levelTitleText = GameObject.FindGameObjectWithTag("LevelTitle").GetComponent<Text>();
         levelTitleText.text = "LEVEL " + sceneLoader.getLevelIndex();
@@ -326,25 +327,39 @@ public class Rocket : MonoBehaviour
     }
     private void TeleportRocket(Collider senderPortal)
     {
+       
         fxAudioSource.clip = teleport;
         fxAudioSource.Play();
         StartCoroutine(DisableCollisionsWhileTeleporting());
         GameObject targetPortal = senderPortal.gameObject.GetComponent<PortalController>().getTargetPortal();
         var portalA = senderPortal.gameObject;
         var portalB = targetPortal.gameObject;
+        float teleportTurnAngle = portalA.transform.eulerAngles.x - portalB.transform.eulerAngles.x;
+        //float teleportTurnAngle = portalB.transform.eulerAngles.x;
 
-        Vector3 newVelocityDirection = new Vector3(rigidbody.velocity.y, rigidbody.velocity.x, rigidbody.velocity.z);
+        Vector3 newVelocityDirection = new Vector3(-rigidbody.velocity.x, rigidbody.velocity.y, rigidbody.velocity.z);
         float xAngle = transform.rotation.eulerAngles.x;
+        Vector2 incomingVector = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y);
+        var senderPortalOrientation = Quaternion.AngleAxis(teleportTurnAngle, Vector3.left);
+        print(senderPortalOrientation);
         print(rigidbody.velocity);
+        print(Vector3.left);
         var euler = portalB.transform.rotation.eulerAngles;
         var rot = Quaternion.Euler(0, 0, euler.z);
-        float teleportTurnAngle = portalA.transform.eulerAngles.x + portalB.transform.eulerAngles.x;
 
-        rigidbody.velocity = Quaternion.AngleAxis(teleportTurnAngle, Vector3.forward) * newVelocityDirection;
+        //rigidbody.velocity = Quaternion.AngleAxis(teleportTurnAngle, Vector3.forward) * newVelocityDirection;
+        rigidbody.velocity = Quaternion.AngleAxis(teleportTurnAngle, Vector3.forward) * rigidbody.velocity;
         
         transform.rotation = Quaternion.AngleAxis(teleportTurnAngle, Vector3.forward) * transform.rotation; ;
         transform.position = portalB.transform.position;
         print("Teleportin with teleportTurnAngle:" + teleportTurnAngle);
+
+
+
+        Quaternion senderPortalRotation = Quaternion.Euler(senderPortal.transform.rotation.x,0,0);
+        Vector3 senderPortalBaseVector = senderPortalRotation * Vector3.left;
+
+        print(Vector3.AngleBetween(senderPortalBaseVector, rigidbody.velocity));
 
 
     }

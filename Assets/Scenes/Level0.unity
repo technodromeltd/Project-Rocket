@@ -1014,6 +1014,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI
       objectReference: {fileID: 0}
+    - target: {fileID: 123405925683900454, guid: cc1bc0d005a85e840982997ee0627469,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 123405925683900473, guid: cc1bc0d005a85e840982997ee0627469,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1094,11 +1099,6 @@ PrefabInstance:
       propertyPath: m_PlaneDistance
       value: 3.19
       objectReference: {fileID: 0}
-    - target: {fileID: 123405927245834563, guid: cc1bc0d005a85e840982997ee0627469,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -51.03003
-      objectReference: {fileID: 0}
     - target: {fileID: 1439636967398802987, guid: cc1bc0d005a85e840982997ee0627469,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -1123,6 +1123,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 123405927245834563, guid: cc1bc0d005a85e840982997ee0627469,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -51.03003
       objectReference: {fileID: 0}
     - target: {fileID: 9135802597724622733, guid: cc1bc0d005a85e840982997ee0627469,
         type: 3}
@@ -1253,6 +1258,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 888268090}
+    - target: {fileID: 4104421652259405028, guid: d446377bafcb123499aed12562062dbd,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 180626554122492898, guid: d446377bafcb123499aed12562062dbd,
         type: 3}
       propertyPath: m_IsActive

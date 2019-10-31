@@ -5,7 +5,8 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] float minYDistance = 20f; // the smoothing for the camera's rotation
+    [SerializeField] float minYDistance = 15f; // the smoothing for the camera's rotation
+    [SerializeField] float minXDistance = 15f; // 
     [SerializeField] float m_MoveSpeed = 0.1f; // the smoothing for the camera's rotation
     [SerializeField] float zoomOffset = 15f; // the smoothing for the camera's rotation
     [SerializeField] Transform m_Target; // the smoothing for the camera's rotation
@@ -31,10 +32,12 @@ public class CameraController : MonoBehaviour
         if (beginAnimationIsPlaying)
             return;
         float yDistance = transform.position.y - m_Target.position.y;
+        float xDistance = transform.position.x - m_Target.position.x;
+
         float zPos;
    
         zPos = startingPosition.z - (rb.velocity.magnitude/2);
-        Vector3 targetPosition = new Vector3(transform.position.x, m_Target.position.y, zPos);
+        Vector3 targetPosition = new Vector3(m_Target.position.x, m_Target.position.y, zPos);
         
         if (yDistance > minYDistance || yDistance < -minYDistance)
         {
@@ -43,6 +46,14 @@ public class CameraController : MonoBehaviour
                  transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * m_MoveSpeed);
             }    
         }
+        if (xDistance > minYDistance || xDistance < -minYDistance)
+        {
+           
+            if (targetPosition.x > startingPosition.x) {
+                 transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * m_MoveSpeed);
+            }    
+        }
+
 
        
     }
